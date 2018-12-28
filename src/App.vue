@@ -1,28 +1,60 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <QueryBuilder 
+    :query="query" 
+    @updatedQueryEvent="queryUpdated = $event" 
+    ref="child" 
+  />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import QueryBuilder from './QueryBuilder.vue'
+
+let initialQuery = {
+  id: "001",
+  rules: [
+    {
+      id: '002',
+      field: "Address",
+      value: "6",
+      operator: "="
+    },
+    {
+      id: '003',
+      rules: [
+        {
+          id: '004',
+          field: "Twitter",
+          value: "5",
+          operator: "<"
+        }
+      ],
+      combinator: 'OR'
+    }
+  ],
+  combinator: 'AND'
+}
 
 export default {
-  name: 'app',
+  data() {
+    return {
+      query: initialQuery,
+      queryUpdated: {}
+    }
+  },
   components: {
-    HelloWorld
+    QueryBuilder
+  },
+  methods: {
+    eventHandler(updatedQueryEvent) {
+      // Here is the result in ordinary object and in JSON
+      console.log(this.queryUpdated)
+      console.log(JSON.stringify(this.queryUpdated))
+    }
+  },
+  mounted() {
+    this.$refs.child.$on('updatedQueryEvent', this.eventHandler);
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
